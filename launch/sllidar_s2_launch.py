@@ -18,6 +18,8 @@ def generate_launch_description():
     inverted = LaunchConfiguration('inverted', default='false')
     angle_compensate = LaunchConfiguration('angle_compensate', default='true')
     scan_mode = LaunchConfiguration('scan_mode', default='DenseBoost')
+    lidar_namespace = LaunchConfiguration('lidar_namespace', default='robot')
+    topic_name = LaunchConfiguration('topic_name', default='/scan')
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -55,6 +57,16 @@ def generate_launch_description():
             default_value=scan_mode,
             description='Specifying scan mode of lidar'),
 
+        DeclareLaunchArgument(
+            'lidar_namespace',
+            default_value=lidar_namespace,
+            description='Specifying namespace of lidar'),
+
+        DeclareLaunchArgument(
+            'topic_name',
+            default_value=topic_name,
+            description='Specifying topic name of lidar publisher'),
+
         Node(
             package='sllidar_ros2',
             executable='sllidar_node',
@@ -65,7 +77,9 @@ def generate_launch_description():
                          'frame_id': frame_id,
                          'inverted': inverted, 
                          'angle_compensate': angle_compensate, 
-                         'scan_mode': scan_mode}],
+                         'scan_mode': scan_mode,
+                         'lidar_namespace': lidar_namespace,
+                         'topic_name': topic_name}],
             output='screen'),
     ])
 

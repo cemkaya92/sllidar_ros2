@@ -59,7 +59,7 @@ class SLlidarNode : public rclcpp::Node
     : Node("sllidar_node")
     {
 
-      scan_pub = this->create_publisher<sensor_msgs::msg::LaserScan>("scan", rclcpp::QoS(rclcpp::KeepLast(10)));
+      
       
     }
 
@@ -78,6 +78,8 @@ class SLlidarNode : public rclcpp::Node
         this->declare_parameter<bool>("angle_compensate", false);
         this->declare_parameter<std::string>("scan_mode",std::string());
         this->declare_parameter<float>("scan_frequency",10);
+        this->declare_parameter<std::string>("lidar_namespace",std::string());
+        this->declare_parameter<std::string>("topic_name",std::string());
         
         this->get_parameter_or<std::string>("channel_type", channel_type, "serial");
         this->get_parameter_or<std::string>("tcp_ip", tcp_ip, "192.168.0.7"); 
@@ -90,10 +92,16 @@ class SLlidarNode : public rclcpp::Node
         this->get_parameter_or<bool>("inverted", inverted, false);
         this->get_parameter_or<bool>("angle_compensate", angle_compensate, false);
         this->get_parameter_or<std::string>("scan_mode", scan_mode, std::string());
+        this->get_parameter_or<std::string>("lidar_namespace", lidar_namespace, std::string());
+        this->get_parameter_or<std::string>("topic_name", topic_name, std::string());
         if(channel_type == "udp")
             this->get_parameter_or<float>("scan_frequency", scan_frequency, 20.0);
         else
             this->get_parameter_or<float>("scan_frequency", scan_frequency, 10.0);
+
+        std::string _topic = lidar_namespace + topic_name;
+
+        scan_pub = this->create_publisher<sensor_msgs::msg::LaserScan>(_topic, rclcpp::QoS(rclcpp::KeepLast(10)));
     }
 
     bool getSLLIDARDeviceInfo(ILidarDriver * drv)
@@ -459,6 +467,8 @@ public:
     float max_distance = 8.0;
     size_t angle_compensate_multiple = 1;//it stand of angle compensate at per 1 degree
     std::string scan_mode;
+    std::string lidar_namespace;
+    std::string topic_name;
     float scan_frequency;
 
     ILidarDriver * drv;    
